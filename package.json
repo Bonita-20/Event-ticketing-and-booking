@@ -1,0 +1,21 @@
+{
+  "name": "event-ticketing-capstone",
+  "version": "1.0.0",
+  "description": "Event ticketing and booking platform",
+  "homepage": "https://github.com/Bonita-20/Event-ticketing-and-booking#readme",
+  "bugs": {
+    "url": "https://github.com/Bonita-20/Event-ticketing-and-booking/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bonita-20/Event-ticketing-and-booking.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "demo": "node scripts/demo.js",
+    "benchmark": "node scripts/benchmark-lookup.js"
+  }
+}
