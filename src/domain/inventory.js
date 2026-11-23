@@ -225,3 +225,84 @@ export function joinWaitlist(store, { tierId, attendeeName, quantity = 1 }) {
     position: waitlist.size,
   };
 }
+
+/**
+ * Publishes a draft event so it appears in public listings.
+ * Throws NOT_FOUND if event does not exist, INVALID_STATE if event has no tiers.
+ */
+export function publishEvent(store, eventId) {
+  assertNonEmptyString(eventId, 'eventId');
+  const event = store.events.get(eventId);
+  if (!event) {
+    throw new DomainError('NOT_FOUND', `Event not found: ${eventId}`);
+  }
+
+  if (event.tierIds.length === 0) {
+    throw new DomainError(
+      'INVALID_STATE',
+      'Cannot publish an event that has no ticket tiers.'
+    );
+  }
+
+  event.published = true;
+  return { ...event, tierIds: [...event.tierIds] };
+}
+
+/**
+ * Unpublishes an event, returning it to draft status.
+ */
+export function unpublishEvent(store, eventId) {
+  assertNonEmptyString(eventId, 'eventId');
+  const event = store.events.get(eventId);
+  if (!event) {
+    throw new DomainError('NOT_FOUND', `Event not found: ${eventId}`);
+  }
+
+  event.published = false;
+  return { ...event, tierIds: [...event.tierIds] };
+}
+
+/**
+ * Builds read-only event summaries enriched with tier pricing and availability.
+ * By default, hides unpublished draft events.
+ */
+export function listEventSummaries(store, { publishedOnly = true } = {}) {
+  const summaries = [];
+
+  for (const event of store.events.values()) {
+    if (publishedOnly && !event.published) {
+      continue;
+    }
+
+    const tiers = event.tierIds
+      .map((tierId) => store.tiers.get(tierId))
+      .filter(Boolean);
+
+    let minPriceCents = null;
+    let totalCapacity = 0;
+    let availableSeats = 0;
+
+    for (const tier of tiers) {
+      totalCapacity += tier.capacity;
+      availableSeats += tier.capacity - tier.sold;
+      if (minPriceCents === null || tier.priceCents < minPriceCents) {
+        minPriceCents = tier.priceCents;
+      }
+    }
+
+    summaries.push({
+      id: event.id,
+      title: event.title,
+      city: event.city,
+      venue: event.venue,
+      date: event.date,
+      published: event.published,
+      tierCount: tiers.length,
+      minPriceCents,
+      totalCapacity,
+      availableSeats,
+    });
+  }
+
+  return summaries;
+}
