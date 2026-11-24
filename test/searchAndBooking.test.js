@@ -12,7 +12,7 @@ import {
   filterEvents,
   sortEvents,
   searchEvents,
-} from '../src/domain/Search.js';
+} from '../src/domain/eventSearch.js';
 import { mergeSort } from '../src/domain/sorting.js';
 
 function seedSampleStore() {

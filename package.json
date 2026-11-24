@@ -11,7 +11,7 @@
     "url": "git+https://github.com/Bonita-20/Event-ticketing-and-booking.git"
   },
   "license": "ISC",
-  "author": "",
+  "author": "Nwamaka Precious Chidiebere",
   "type": "module",
   "engines": {
     "node": ">=22.13.0"
